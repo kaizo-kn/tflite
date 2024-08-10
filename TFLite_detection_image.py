@@ -12,9 +12,9 @@
 #
 # I added my own method of drawing boxes and labels using OpenCV.
 
-cd tflite
-source tflite1-env/bin/activate
-python3 TFLite_detection_image.py --modeldir=./ --image=test1.jpg
+#cd tflite
+#source tflite1-env/bin/activate
+#@python3 TFLite_detection_image.py --modeldir=./ --image=test1.jpg
 
 
 # Import packages
