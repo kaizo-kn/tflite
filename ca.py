@@ -1,51 +1,32 @@
-import cv2
-import numpy as np
-import os
+from picamera2 import Picamera2
+import time
+import subprocess
 
-# Muat model TensorFlow
-# model = tf.saved_model.load('path/to/saved_model')
+# Inisialisasi Picamera2
+picam2 = Picamera2()
 
-# Fungsi untuk memproses dan mendeteksi objek
-def detect_objects(frame):
-    # Resize frame sesuai input model
-    input_frame = cv2.resize(frame, (224, 224))  # Sesuaikan dengan input model
-    input_frame = np.expand_dims(input_frame, axis=0)  # Tambahkan dimensi batch
-    input_frame = input_frame / 255.0  # Normalisasi
+# Konfigurasi untuk menangkap video
+video_config = picam2.create_video_configuration()
+picam2.configure(video_config)
 
-    # Lakukan prediksi dengan model
-    # predictions = model(input_frame)
-    
-    # Cetak hasil prediksi (ini harus disesuaikan dengan output model)
-    print("Prediksi: 0")
+# Mulai kamera
+picam2.start()
 
-    # Tambahkan kode untuk menggambar bounding box atau hasil lain pada frame
+# Mulai merekam video
+picam2.start_recording("output.h264")
 
-    return frame
+# Tunggu selama 3 detik
+time.sleep(3)
 
-# Menggunakan VideoCapture untuk menangkap aliran video
-cap = cv2.VideoCapture('libcamera-vid -t 0 --inline --nopreview -o - | ffmpeg -i - -f rawvideo -pix_fmt bgr24 -')
+# Hentikan perekaman
+picam2.stop_recording()
 
-if not cap.isOpened():
-    print("Tidak dapat membuka kamera")
-    exit()
+# Matikan kamera
+picam2.stop()
 
-# Loop untuk menangkap frame secara terus-menerus
-while True:
-    ret, frame = cap.read()
-    if not ret:
-        print("Gagal menangkap frame")
-        break
+print("Video berhasil direkam dengan durasi 3 detik.")
 
-    # Deteksi objek pada frame
-    # processed_frame = detect_objects(frame)
+# Konversi ke MP4 menggunakan ffmpeg
+subprocess.run(['ffmpeg', '-i', 'output.h264', '-c:v', 'copy', 'output.mp4'])
 
-    # Tampilkan frame yang telah diproses
-    # cv2.imshow('Deteksi Objek Real-time', processed_frame)
-
-    # Tekan 'q' untuk keluar dari loop
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-# Bersihkan resource
-cap.release()
-cv2.destroyAllWindows()
+print("Video berhasil dikonversi ke MP4.")
